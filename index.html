@@ -1,0 +1,187 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>NEXORA AI</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap">
+<style>
+:root{--p:#a855f7;--b:#3b82f6;--c:#22d3ee;color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 15% 0,#1b0b40,#03030a 60%) fixed;color:#e8e9ff;font:15px/1.5 system-ui,sans-serif;min-height:100vh}
+#bg{position:fixed;inset:0;z-index:-1}h1,h2,.lg{font-family:Orbitron,system-ui,sans-serif;letter-spacing:.08em}
+header{display:flex;align-items:center;gap:12px;padding:14px 16px}.lg{font-size:22px;font-weight:800;background:linear-gradient(90deg,var(--p),var(--c));-webkit-background-clip:text;background-clip:text;color:transparent}
+.orb{flex:none;width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,var(--c) 30%,var(--p) 70%);box-shadow:0 0 22px var(--p),0 0 44px rgba(34,211,238,.4);animation:pu 3s ease-in-out infinite;position:relative}
+.orb::after{content:"";position:absolute;inset:-8px;border:1px solid var(--c);border-radius:50%;transform:rotateX(70deg);animation:sp 4s linear infinite}
+@keyframes pu{50%{transform:scale(1.12)}}@keyframes sp{to{transform:rotateX(70deg) rotateZ(360deg)}}
+#say{font-size:13px;color:#b9c3ff;background:rgba(255,255,255,.06);border:1px solid rgba(34,211,238,.3);border-radius:14px;padding:8px 12px;flex:1}
+#nav{display:flex;gap:8px;overflow-x:auto;padding:4px 16px 10px;scrollbar-width:none}#nav button{flex:none;background:rgba(255,255,255,.06);color:#cfd4ff;border:1px solid rgba(168,85,247,.3);border-radius:12px;padding:8px 12px;font:inherit;font-size:13px}
+#nav button.on{background:linear-gradient(135deg,var(--p),var(--b));color:#fff;box-shadow:0 0 18px rgba(168,85,247,.6)}
+main{padding:6px 16px 60px;max-width:1100px;margin:auto}h2{font-size:17px;margin:8px 0 12px}
+.glass{background:rgba(255,255,255,.055);border:1px solid rgba(168,85,247,.35);border-radius:18px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:16px;margin-bottom:14px;animation:gl 6s ease-in-out infinite;transition:transform .2s}
+@keyframes gl{50%{border-color:rgba(34,211,238,.6);box-shadow:0 0 28px rgba(34,211,238,.18)}}
+.two{display:grid;gap:14px}@media(min-width:800px){.two{grid-template-columns:1fr 1fr}}
+.drop{min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;border-style:dashed;cursor:pointer;gap:4px}.drop.ov{background:rgba(34,211,238,.15)}
+.btn{background:linear-gradient(135deg,var(--p),var(--b) 60%,var(--c));color:#fff;border:0;border-radius:12px;padding:11px 18px;font:inherit;font-weight:600;box-shadow:0 0 20px rgba(59,130,246,.45);cursor:pointer}.btn.s{background:rgba(255,255,255,.1);box-shadow:none}
+input,select{background:rgba(0,0,0,.4);color:#fff;border:1px solid rgba(168,85,247,.4);border-radius:10px;padding:8px;font:inherit;max-width:100%}
+.bar{height:10px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden}.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--p),var(--c));transition:width .3s}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}.mc{background:rgba(0,0,0,.35);border-radius:12px;overflow:hidden;font-size:11px}.mc img{width:100%;height:110px;object-fit:cover;display:block}.mc div{padding:6px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px}.row img{width:40px;height:40px;border-radius:8px;object-fit:cover}
+.tl{display:grid;grid-template-columns:48px 1fr;gap:6px;font-size:10px;color:#9aa4ff;align-items:center}.tr{position:relative;height:26px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden}
+.seg{position:absolute;top:2px;bottom:2px;border-radius:5px;font-style:normal;font-size:10px;text-align:center;line-height:22px;color:#fff;text-shadow:0 0 4px #000;border:1px solid rgba(255,255,255,.4);overflow:hidden}.tr u{position:absolute;top:0;bottom:0;width:1px;background:var(--c)}
+small,.mut{color:#9aa4ff}.ok{color:#5eead4}.bad{color:#fda4af}video,canvas#cv{max-width:100%;border-radius:14px}#cv{display:none}
+</style></head><body><canvas id="bg"></canvas>
+<header><div class="orb"></div><div><div class="lg">NEXORA AI</div></div><div id="say">Hi, I’m your guide. Start by adding a reference video.</div></header>
+<nav id="nav"></nav>
+<main>
+<section class="pg"><h2>CREATE PROJECT</h2><div class="two">
+<div class="glass drop tilt" id="dR"><b>① Reference video</b><small>MP4 · MOV · WebM from your gallery or files</small></div>
+<div class="glass drop tilt" id="dM"><b>② My photos / videos</b><small>Drag &amp; drop, or pick from your gallery</small></div></div>
+<div class="glass" id="stat"><span class="mut">Waiting for a reference video.</span></div>
+<button class="btn" onclick="go(4)">Open recreation engine →</button></section>
+
+<section class="pg" hidden><h2>CLONE VIDEO STYLE · EDITING BLUEPRINT</h2><div class="glass" id="bp"></div></section>
+
+<section class="pg" hidden><h2>INSTAGRAM REEL ANALYZER</h2><div class="glass"><b>Paste a Reel URL</b><br><input id="ig" placeholder="https://www.instagram.com/reel/…" style="width:100%;margin:8px 0"><button class="btn" id="igGo">Check link</button><div id="igMsg" style="margin-top:10px"></div></div>
+<div class="glass"><b>Or upload the video file</b><br><button class="btn s" style="margin-top:8px" onclick="$('#fR').click()">Choose video…</button><div class="bar" style="margin-top:10px"><i id="ap"></i></div><div id="at" class="mut"></div></div><div class="glass" id="st2"><span class="mut">No analysis yet.</span></div></section>
+
+<section class="pg" hidden><h2>MY MEDIA LIBRARY</h2><div class="glass"><button class="btn s" onclick="$('#fM').click()">+ Add photos / videos</button><div id="lib" class="grid" style="margin-top:12px"></div></div></section>
+
+<section class="pg" hidden><h2>AI VIDEO GENERATOR</h2>
+<div class="glass"><b>Upload checklist</b><div id="chk"></div></div>
+<div class="glass"><div class="row" style="border:0">Mode <select id="mode"><option value="exact">Exact Timing</option><option value="cine">Cinematic Recreation</option><option value="smart" selected>Smart AI Recreation</option><option value="manual">Manual Adjustment</option></select>
+<button class="btn s" onclick="autoAssign();paint()">Re-suggest media</button></div>
+<div class="row" style="border:0">Music <input type="file" id="fMu" accept="audio/*"> <span id="mu" class="mut"></span></div>
+<div class="row" style="border:0">Text <input id="txt" placeholder="Opening title (optional)" maxlength="40"></div>
+<small>Face handling: your uploaded people are never swapped or altered — media is only cropped, scaled and graded.</small></div>
+<div class="glass"><b>Scene assignment</b><div id="asg"></div></div>
+<div class="glass"><b>Multi-track timeline</b><div id="tl" style="margin-top:8px"></div></div>
+<button class="btn" onclick="go(5)">Continue to export →</button></section>
+
+<section class="pg" hidden><h2>EXPORT CENTER</h2><div class="glass">
+<div class="row" style="border:0">Resolution <select id="res"><option value="720" selected>720p</option><option value="1080">1080p Full HD</option><option value="1440">2K</option><option value="2160">4K (device permitting)</option></select>
+Aspect <select id="ar"><option>9:16</option><option>16:9</option><option>1:1</option></select> FPS <select id="fps"><option>30</option><option>60</option></select></div>
+<button class="btn" id="rb">Render video</button> <button class="btn s" id="cb" hidden>Cancel</button>
+<div class="bar" style="margin-top:12px"><i id="rp"></i></div><div id="rt" class="mut" style="margin-top:6px">Idle.</div>
+<small>Rendering runs on the NEXORA server with FFmpeg. Progress below is reported by the server.</small></div>
+<canvas id="cv"></canvas><div class="glass" id="res2" hidden></div></section>
+
+<section class="pg" hidden><h2>RECENT PROJECTS</h2><div class="glass" id="rec"></div></section>
+<section class="pg" hidden><h2>PROFILE &amp; SETTINGS</h2><div class="glass">Display name <input id="nm"><p class="mut">Your files are uploaded to your own NEXORA server, processed by FFmpeg there, and kept in your project history until you delete the project.</p></div></section>
+</main><input id="fR" type="file" accept="video/*" hidden><input id="fM" type="file" accept="image/*,video/*" multiple hidden><input id="fP" type="file" accept="image/*,video/*" hidden>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],f1=x=>x.toFixed(1);
+const S={bp:[],info:null,beats:[],mbeats:[],media:[],asg:[],music:null,out:null,txt:"",rep:null};let uid=0;
+const say=t=>$("#say").textContent=t;
+["⊕ Create","◈ Clone Style","◎ Reel Analyzer","▦ Library","✦ Generator","⇩ Export","◷ Projects","☺ Profile"].forEach((n,i)=>{const b=document.createElement("button");b.textContent=n;b.onclick=()=>go(i);$("#nav").append(b)});
+function go(i){$$(".pg").forEach((p,k)=>p.hidden=k!=i);$$("#nav button").forEach((b,k)=>b.classList.toggle("on",k==i));[,paintBP,,paintLib,paint,exp,recent][i]?.();scrollTo(0,0)}
+// ---------- helpers
+const vid=u=>new Promise((ok,no)=>{const v=document.createElement("video");v.muted=true;v.playsInline=true;v.preload="auto";v.onloadeddata=()=>ok(v);v.onerror=()=>no();v.src=u});
+const seek=(v,t)=>new Promise(r=>{v.onseeked=()=>r();v.currentTime=Math.min(t,Math.max(0,v.duration-.05))});
+function detect(b){const a=b.getChannelData(0),sr=b.sampleRate,h=1024,E=[];for(let i=0;i+h<a.length;i+=h){let s=0;for(let j=0;j<h;j++)s+=a[i+j]**2;E.push(s/h)}
+const o=[];let l=-1;for(let i=1;i<E.length;i++){const lo=Math.max(0,i-43);let m=0;for(let k=lo;k<i;k++)m+=E[k];m/=i-lo;const t=i*h/sr;if(E[i]>1.6*m&&E[i]>E[i-1]&&E[i]>1e-5&&t-l>.25){o.push(t);l=t}}return o}
+async function beatsOf(file){try{if(file.size>120e6)return[];const ac=new(window.AudioContext||webkitAudioContext)(),b=await ac.decodeAudioData(await file.arrayBuffer());ac.close();return detect(b)}catch(e){return[]}}
+const bpm=b=>{if(b.length<4)return 0;const d=b.slice(1).map((v,i)=>v-b[i]).sort((a,c)=>a-c);return Math.round(60/d[d.length>>1])};
+// ---------- reference analysis
+async function analyze(file){
+if(S.refURL)URL.revokeObjectURL(S.refURL);S.refURL=URL.createObjectURL(file);go(2);say("Reading your reference frame by frame…");
+let v;try{v=await vid(S.refURL)}catch(e){return say("That video format isn’t readable in this browser. Try MP4 (H.264).")}
+const d=v.duration,W=48,H=27,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d",{willReadFrequently:true}),step=Math.max(.2,d/160),sm=[];let prev=null;
+for(let t=0;t<d;t+=step){await seek(v,t);x.drawImage(v,0,0,W,H);const p=x.getImageData(0,0,W,H).data;let r=0,g=0,b=0,df=0;
+for(let i=0;i<p.length;i+=4){r+=p[i];g+=p[i+1];b+=p[i+2];if(prev)df+=Math.abs(p[i]-prev[i])+Math.abs(p[i+1]-prev[i+1])+Math.abs(p[i+2]-prev[i+2])}
+const n=p.length/4;sm.push({t,r:r/n,g:g/n,b:b/n,d:prev?df/n/3:0});prev=p;$("#ap").style.width=t/d*100+"%";$("#at").textContent=`Analyzing frames… ${Math.round(t/d*100)}%`}
+const ds=sm.slice(1).map(s=>s.d),mu=ds.reduce((a,b)=>a+b,0)/(ds.length||1),sd=Math.sqrt(ds.reduce((a,b)=>a+(b-mu)**2,0)/(ds.length||1)),thr=Math.max(16,mu+2.5*sd),cuts=[0];
+sm.forEach(s=>{if(s.d>thr&&s.t-cuts[cuts.length-1]>.4)cuts.push(s.t)});
+S.bp=cuts.map((s,i)=>{const e=i+1<cuts.length?cuts[i+1]:d,seg=sm.filter(q=>q.t>=s&&q.t<e),m=k=>seg.reduce((a,q)=>a+q[k],0)/(seg.length||1),mo=seg.filter(q=>q.d<=thr).reduce((a,q)=>a+q.d,0)/(seg.length||1);
+return{s,e,dur:Math.max(.3,e-s),rgb:[m("r"),m("g"),m("b")].map(Math.round),mo,fx:"auto",sp:1}});
+$("#at").textContent="Detecting beats in the audio track…";S.beats=await beatsOf(file);
+const w=v.videoWidth,h=v.videoHeight,r=w/h;
+S.info={d,w,h,lab:r<.7?"9:16 vertical":r>1.5?"16:9 landscape":Math.abs(r-1)<.12?"1:1 square":w+"×"+h,thr:Math.round(thr),step};
+$("#ar").value=r<.7?"9:16":r>1.5?"16:9":Math.abs(r-1)<.12?"1:1":"9:16";
+$("#at").textContent="Analysis complete.";autoAssign();stats();say(`Blueprint ready: ${S.bp.length} scenes. Now add ${S.bp.length} photos or clips.`)}
+function stats(){const i=S.info;if(!i)return;const lum=S.bp.reduce((a,s)=>a+(s.rgb[0]+s.rgb[1]+s.rgb[2])/3*s.dur,0)/S.bp.reduce((a,s)=>a+s.dur,0);
+const h=`<b>Measured from your file</b><div class=row>Duration ${f1(i.d)}s · Aspect ${i.lab} (${i.w}×${i.h}) · ${S.bp.length} scenes · ${S.bp.length-1} cuts</div>
+<div class=row>Cuts at: ${S.bp.slice(1).map(s=>f1(s.s)+"s").join(", ")||"none detected"} <small>(±${f1(i.step)}s)</small></div>
+<div class=row>Audio beats: ${S.beats.length?S.beats.length+" detected · ~"+bpm(S.beats)+" BPM":"none detectable"} · Avg brightness ${Math.round(lum/2.55)}%</div>
+<div class=row>Palette ${S.bp.map(s=>`<span style="display:inline-block;width:18px;height:18px;border-radius:5px;background:rgb(${s.rgb})"></span>`).join("")}</div>
+<small>Not measurable in-browser: exact filters, text fonts and zoom type. The engine approximates style with per-scene color grade, motion level, zooms and cut timing.</small>`;
+$("#st2").innerHTML=h;chk()}
+$("#igGo").onclick=()=>{$("#igMsg").innerHTML=$("#ig").value.trim()?`<span class=bad>NEXORA can’t retrieve videos from Instagram links, so nothing was analyzed for this URL.</span><br>Please upload the original video or another accessible video file you have the right to use.`:"Paste a link first."}
+// ---------- media
+async function addMedia(files){for(const file of files){const isV=file.type.startsWith("video"),u=URL.createObjectURL(file);let el;
+try{if(isV)el=await vid(u);else{el=new Image();el.src=u;await el.decode()}}catch(e){say(`Couldn’t read ${file.name} (unsupported format).`);continue}
+const w=isV?el.videoWidth:el.naturalWidth,h=isV?el.videoHeight:el.naturalHeight;if(isV)await seek(el,Math.min(.2,el.duration/2));
+const c=document.createElement("canvas");c.width=c.height=8;const x=c.getContext("2d");x.drawImage(el,0,0,8,8);const p=x.getImageData(0,0,8,8).data,g=[];for(let i=0;i<256;i+=4)g.push((p[i]+p[i+1]+p[i+2])/3);const mn=g.reduce((a,b)=>a+b)/64,hash=g.map(v=>v>mn?1:0);
+const dup=S.media.some(m=>m.hash.filter((v,i)=>v!=hash[i]).length<=4);
+const th=document.createElement("canvas");th.width=160;th.height=Math.round(160*h/w);th.getContext("2d").drawImage(el,0,0,th.width,th.height);
+let faces=null;if(window.FaceDetector){try{faces=(await new FaceDetector().detect(th)).length}catch(e){}}
+S.media.push({id:++uid,name:file.name,isV,el,url:u,w,h,dur:isV?el.duration:0,hash,dup,faces,thumb:th.toDataURL("image/jpeg",.6),or:w<h*.95?"portrait":w>h*1.05?"landscape":"square"})}
+autoAssign();chk();paintLib();say(`${S.media.length} file(s) in your library.`)}
+function autoAssign(){const pool=S.media.filter(m=>!m.dup).sort((a,b)=>(b.faces||0)-(a.faces||0)),used=new Set();
+S.asg=S.bp.map((sc,i)=>{const want=sc.dur>=2.5;const m=pool.find(m=>!used.has(m.id)&&m.isV==want)||pool.find(m=>!used.has(m.id))||pool[i%(pool.length||1)];if(m)used.add(m.id);return m?m.id:null})}
+const need=sc=>sc.dur>=2.5?`1 video clip ≥${f1(sc.dur)}s`:"1 photo";
+function chk(){const miss=S.asg.filter(a=>a==null).length,ref=S.info?S.info.lab:"";
+const h=S.bp.length?S.bp.map((sc,i)=>`<div class=row>${S.asg[i]!=null?'<span class=ok>✓</span>':'<span class=bad>○</span>'} Scene ${i+1} · ${f1(sc.s)}–${f1(sc.e)}s · ${need(sc)}${ref?" · "+ref.split(" ")[1]:""}</div>`).join(""):'<span class=mut>Analyze a reference video to see what you need.</span>';
+$("#chk").innerHTML=h;$("#stat").innerHTML=S.info?`<b>${S.bp.length} scenes · ${f1(S.info.d)}s · ${S.info.lab}</b><br>Media: ${S.media.length} added${miss?` · <span class=bad>${miss} scene(s) still need media</span>`:' · <span class=ok>all scenes covered</span>'}`:'<span class=mut>Waiting for a reference video.</span>'}
+function paintLib(){$("#lib").innerHTML=S.media.length?S.media.map(m=>`<div class=mc><img src="${m.thumb}"><div><b>${m.name.slice(0,18)}</b><br>${m.isV?f1(m.dur)+"s clip":"photo"} · ${m.or}${m.faces!=null?" · "+m.faces+" face(s)":""}${m.dup?'<br><span class=bad>possible duplicate</span>':""}<br><a href="#" onclick="rep(${m.id});return false">Replace</a> · <a href="#" onclick="rm(${m.id});return false">Remove</a></div></div>`).join(""):'<span class=mut>No media yet.</span>'}
+const rm=id=>{const k=S.media.findIndex(m=>m.id==id);S.media.splice(k,1);autoAssign();chk();paintLib()},rep=id=>{S.rep=id;$("#fP").click()};
+function paint(){chk();$("#asg").innerHTML=S.bp.length?S.bp.map((sc,i)=>{const m=S.media.find(m=>m.id==S.asg[i]);return `<div class=row>${m?`<img src="${m.thumb}">`:""}<span>Scene ${i+1} · ${need(sc)}</span><select onchange="S.asg[${i}]=+this.value||null;paint()"><option value="">— none —</option>${S.media.map(o=>`<option value="${o.id}" ${o.id==S.asg[i]?"selected":""}>${o.name.slice(0,22)}${o.dup?" (dup)":""}</option>`).join("")}</select></div>`}).join(""):'<span class=mut>No blueprint yet.</span>';
+$("#tl").innerHTML=tl()}
+function tl(){const T=S.bp.reduce((a,s)=>a+s.dur,0)||1;let c=0;const seg=S.bp.map((s,i)=>{const l=c/T*100;c+=s.dur;const m=S.media.find(m=>m.id==S.asg[i]);return `<i class=seg style="left:${l}%;width:${s.dur/T*100}%;background:rgb(${s.rgb})" title="${m?m.name:""}">${i+1}</i>`}).join("");
+const bt=(S.music?S.mbeats:S.beats).filter(b=>b<T).map(b=>`<u style="left:${b/T*100}%"></u>`).join("");
+return `<div class=tl><span>VIDEO</span><div class=tr>${seg}</div><span>GRADE</span><div class=tr>${S.bp.map((s,i)=>{const l=S.bp.slice(0,i).reduce((a,q)=>a+q.dur,0)/T*100;return `<i class=seg style="left:${l}%;width:${s.dur/T*100}%;background:rgba(${s.rgb},.5)">${s.fx=="auto"?"":s.fx}</i>`}).join("")}</div><span>TEXT</span><div class=tr>${$("#txt").value?`<i class=seg style="left:2%;width:${Math.min(95,3.5/T*100)}%;background:#7c3aed">T</i>`:""}</div><span>AUDIO</span><div class=tr>${bt}</div></div>`}
+function paintBP(){if(!S.bp.length){$("#bp").innerHTML='<span class=mut>Analyze a reference video first.</span>';return}
+$("#bp").innerHTML=`<div id=tl2>${tl()}</div>`+S.bp.map((s,i)=>`<div class=row><b>${i+1}</b> ${f1(s.s)}s · Duration <input type=number step=.1 min=.3 value="${f1(s.dur)}" style="width:70px" onchange="edit(${i},this.value)"> Motion: ${s.mo<2?"static":s.mo<6?"gentle":"fast"} · Effect <select onchange="S.bp[${i}].fx=this.value"><option value=auto ${s.fx=="auto"?"selected":""}>auto</option><option value=zin ${s.fx=="zin"?"selected":""}>zoom in</option><option value=zout ${s.fx=="zout"?"selected":""}>zoom out</option><option value=none ${s.fx=="none"?"selected":""}>none</option></select> Speed <select onchange="S.bp[${i}].sp=+this.value"><option>0.5</option><option ${s.sp==1?"selected":""}>1</option><option>1.5</option><option>2</option></select></div>`).join("")}
+function edit(i,v){S.bp[i].dur=Math.max(.3,+v||S.bp[i].dur);let c=0;S.bp.forEach(s=>{s.s=c;c+=s.dur;s.e=c});$("#tl2").innerHTML=tl();chk()}
+// ---------- IndexedDB projects
+const db=()=>new Promise((ok,no)=>{const r=indexedDB.open("nexora",1);r.onupgradeneeded=()=>r.result.createObjectStore("p",{keyPath:"id"});r.onsuccess=()=>ok(r.result);r.onerror=no});
+const put=async o=>{try{(await db()).transaction("p","readwrite").objectStore("p").put(o)}catch(e){}};
+const all=async()=>{try{const d=await db();return await new Promise(r=>{const q=d.transaction("p").objectStore("p").getAll();q.onsuccess=()=>r(q.result)})}catch(e){return[]}};
+async function recent(){const l=(await all()).sort((a,b)=>b.id-a.id);$("#rec").innerHTML=l.length?l.map(p=>{const u=URL.createObjectURL(p.blob);return `<div class=row><b>${p.name}</b><span class=mut>${new Date(p.id).toLocaleString()} · ${(p.blob.size/1e6).toFixed(1)} MB</span><a class=btn style="padding:6px 12px;text-decoration:none" href="${u}" download="${p.name}.${p.ext}">Download</a><a href="#" onclick="delp(${p.id});return false">Delete</a></div>`}).join(""):'<span class=mut>No saved projects yet.</span>'}
+const delp=async id=>{try{(await db()).transaction("p","readwrite").objectStore("p").delete(id)}catch(e){}recent()};
+// ---------- render (real, on-device)
+const rp=(p,t)=>{$("#rp").style.width=p+"%";$("#rt").textContent=t};
+function exp(){}
+async function render(){
+if(!S.bp.length)return say("Analyze a reference video first.");
+if(!S.media.length||S.asg.some(a=>a==null))return say("Some scenes still need media — check the checklist in the Generator.");
+if(!window.MediaRecorder)return say("This browser can’t record video. Please use Chrome.");
+const mode=$("#mode").value,fps=+$("#fps").value,q=+$("#res").value,[a,b]=$("#ar").value.split(":").map(Number);let w,h;if(a<b){w=q;h=Math.round(q*b/a)}else{h=q;w=Math.round(q*a/b)}w&=~1;h&=~1;
+const txt=$("#txt").value.trim(),kb=mode=="cine"||mode=="smart",gr=mode!="manual",xf=kb,bars=mode=="cine";
+let d=S.bp.map(s=>s.dur);const bt=S.music?S.mbeats:S.beats;
+if(mode=="smart"&&bt.length){let acc=0,pt=0;d=d.map((v,i)=>{acc+=v;let t=acc;if(i<d.length-1){const n=bt.reduce((p,c)=>Math.abs(c-t)<Math.abs(p-t)?c:p);if(Math.abs(n-t)<.35)t=n}const o=Math.max(.5,t-pt);pt+=o;return o})}
+const T=d.reduce((p,c)=>p+c,0),st=[];d.reduce((c,v,i)=>(st[i]=c,c+v),0);
+const cv=$("#cv"),x=cv.getContext("2d");cv.width=w;cv.height=h;const stream=cv.captureStream(fps);let ac,aud;
+if(S.music){ac=new AudioContext();aud=new Audio(S.music.url);const sr=ac.createMediaElementSource(aud),ds=ac.createMediaStreamDestination();sr.connect(ds);ds.stream.getAudioTracks().forEach(t=>stream.addTrack(t))}
+const mt=["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4","video/webm;codecs=vp9,opus","video/webm"].find(t=>MediaRecorder.isTypeSupported(t));
+let rec;try{rec=new MediaRecorder(stream,{mimeType:mt,videoBitsPerSecond:Math.round(w*h*fps*.1)})}catch(e){return say(`${w}×${h} isn’t supported on this device. Try a lower resolution.`)}
+const ch=[];rec.ondataavailable=e=>e.data.size&&ch.push(e.data);
+const it=S.asg.map(id=>S.media.find(m=>m.id==id));let cancel=false,idx=-1;$("#rb").disabled=true;$("#cb").hidden=false;$("#cb").onclick=()=>cancel=true;$("#res2").hidden=true;
+rp(0,"Preparing media…");
+const draw=(m,u,i)=>{const sw=m.isV?m.el.videoWidth:m.el.naturalWidth,sh=m.isV?m.el.videoHeight:m.el.naturalHeight;let fx=S.bp[i].fx;if(fx=="auto")fx=kb?(i%2?"zout":"zin"):"none";const z=fx=="zin"?1+.15*u:fx=="zout"?1.15-.15*u:1,k=Math.max(w/sw,h/sh)*z;x.drawImage(m.el,(w-sw*k)/2,(h-sh*k)/2,sw*k,sh*k)};
+rec.start(500);if(aud){await ac.resume();aud.play()}const t0=performance.now();
+await new Promise(res=>{const loop=()=>{if(cancel)return res();const t=(performance.now()-t0)/1000;if(t>=T)return res();
+const i=Math.max(0,st.findLastIndex(s=>t>=s));if(i!=idx){idx=i;const m=it[i];if(m.isV){m.el.playbackRate=S.bp[i].sp;m.el.currentTime=0;m.el.play().catch(()=>{})}if(i>1&&it[i-2].isV)it[i-2].el.pause()}
+const lt=t-st[i],u=lt/d[i];x.globalAlpha=1;x.fillStyle="#000";x.fillRect(0,0,w,h);
+if(xf&&i>0&&lt<.25){draw(it[i-1],1,i-1);x.globalAlpha=lt/.25}draw(it[i],u,i);x.globalAlpha=1;
+if(gr){x.globalCompositeOperation="soft-light";x.fillStyle=`rgba(${S.bp[i].rgb},.45)`;x.fillRect(0,0,w,h);x.globalCompositeOperation="source-over"}
+if(bars){x.fillStyle="#000";x.fillRect(0,0,w,h*.09);x.fillRect(0,h*.91,w,h*.09)}
+if(txt&&t>.3&&t<3.8){let fs=w*.075;x.font=`800 ${fs}px Orbitron,sans-serif`;const mw=x.measureText(txt).width;if(mw>w*.9){fs*=w*.9/mw;x.font=`800 ${fs}px Orbitron,sans-serif`}x.textAlign="center";x.shadowColor="#22d3ee";x.shadowBlur=20;x.fillStyle="#fff";x.globalAlpha=Math.min(1,(3.8-t));x.fillText(txt.slice(0,Math.floor((t-.3)*18)+1),w/2,h*.8);x.shadowBlur=0;x.globalAlpha=1}
+rp(Math.min(99,t/T*100),`${Math.floor(t/T*100)}% · ~${Math.ceil(T-t)}s left · Compositing scene ${i+1}/${d.length} (${w}×${h} @${fps}fps)`);requestAnimationFrame(loop)};loop()});
+it.forEach(m=>m.isV&&m.el.pause());aud&&aud.pause();rp(99,"Finalizing file…");
+await new Promise(r=>{rec.onstop=r;rec.stop()});ac&&ac.close();$("#rb").disabled=false;$("#cb").hidden=true;
+if(cancel){rp(0,"Rendering cancelled.");return}
+const ext=mt.includes("mp4")?"mp4":"webm",blob=new Blob(ch,{type:mt.split(";")[0]});if(S.out)URL.revokeObjectURL(S.out.url);S.out={url:URL.createObjectURL(blob),blob,ext};
+const nm="NEXORA-"+(txt||"project").slice(0,20).replace(/\W+/g,"-");put({id:Date.now(),name:nm,ext,blob});
+rp(100,`Done · ${(blob.size/1e6).toFixed(1)} MB ${ext.toUpperCase()}`);say("Your video is ready. Preview it, then download.");
+const r=$("#res2");r.hidden=false;r.innerHTML=`<video id=ov src="${S.out.url}" controls playsinline style="width:100%;max-height:70vh"></video><div class=row style="border:0"><a class=btn style="text-decoration:none" href="${S.out.url}" download="${nm}.${ext}">⇩ Download ${ext.toUpperCase()}</a><button class="btn s" onclick="share('${nm}')">Share</button><button class="btn s" onclick="ba(this)">Before / After</button><button class="btn s" onclick="render()">Generate again</button></div>${ext=="webm"?"<small>This browser recorded WebM. Newer Chrome versions record MP4.</small>":""}<small>Saved to Recent Projects. Note: audio is only included if you added music.</small>`}
+let showRef=false;const ba=b=>{showRef=!showRef;const v=$("#ov");v.src=showRef?S.refURL:S.out.url;b.textContent=showRef?"Showing: Original ref":"Showing: New video";v.play().catch(()=>{})};
+async function share(n){const f=new File([S.out.blob],`${n}.${S.out.ext}`,{type:S.out.blob.type});try{if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:n});else say("Sharing isn’t supported here — use Download.")}catch(e){}}
+// ---------- wiring
+$("#rb").onclick=render;
+$("#fR").onchange=e=>e.target.files[0]&&analyze(e.target.files[0]);$("#fM").onchange=e=>addMedia([...e.target.files]);
+$("#fP").onchange=async e=>{const f=e.target.files[0];if(!f)return;const k=S.media.findIndex(m=>m.id==S.rep),oid=S.rep;await addMedia([f]);const n=S.media.pop();if(k>=0&&n){S.media[k]=n;S.asg=S.asg.map(a=>a==oid?n.id:a)}paintLib();chk()};
+$("#fMu").onchange=async e=>{const f=e.target.files[0];if(!f)return;S.music={url:URL.createObjectURL(f)};$("#mu").textContent="Detecting beats…";S.mbeats=await beatsOf(f);$("#mu").textContent=S.mbeats.length?`${S.mbeats.length} beats · ~${bpm(S.mbeats)} BPM`:"loaded";paint()};
+$("#txt").oninput=()=>$("#tl").innerHTML=tl();
+$("#dR").onclick=()=>$("#fR").click();$("#dM").onclick=()=>$("#fM").click();
+[["#dR",f=>analyze(f[0])],["#dM",addMedia]].forEach(([s,fn])=>{const z=$(s);z.ondragover=e=>{e.preventDefault();z.classList.add("ov")};z.ondragleave=()=>z.classList.remove("ov");z.ondrop=e=>{e.preventDefault();z.classList.remove("ov");fn([...e.dataTransfer.files])}});
+try{$("#nm").value=localStorage.getItem("nx")||"";$("#nm").oninput=e=>localStorage.setItem("nx",e.target.value)}catch(e){}
+$$(".tilt").forEach(el=>{el.onpointermove=e=>{if(e.pointerType!="mouse")return;const r=el.getBoundingClientRect(),px=(e.clientX-r.left)/r.width-.5,py=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(700px) rotateY(${px*10}deg) rotateX(${-py*10}deg)`};el.onpointerleave=()=>el.style.transform=""});
+(()=>{const c=$("#bg"),x=c.getContext("2d");let W,H,P=[];const rs=()=>{W=c.width=innerWidth;H=c.height=innerHeight;P=Array.from({length:Math.min(90,W/12|0)},()=>({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.3,vy:(Math.random()-.5)*.3,k:["#a855f7","#3b82f6","#22d3ee"][Math.random()*3|0]}))};rs();addEventListener("resize",rs);
+(function a(){x.clearRect(0,0,W,H);P.forEach((p,i)=>{p.x=(p.x+p.vx+W)%W;p.y=(p.y+p.vy+H)%H;x.fillStyle=p.k;x.globalAlpha=.8;x.fillRect(p.x,p.y,1.8,1.8);for(let j=i+1;j<P.length;j++){const q=P[j],dd=Math.hypot(p.x-q.x,p.y-q.y);if(dd<110){x.globalAlpha=(1-dd/110)*.18;x.strokeStyle=p.k;x.beginPath();x.moveTo(p.x,p.y);x.lineTo(q.x,q.y);x.stroke()}}});requestAnimationFrame(a)})()})();
+go(0);chk();
+</script><script src="config.js"></script><script src="api.js"></script></body></html>
